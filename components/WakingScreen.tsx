@@ -22,7 +22,7 @@ export function WakingScreen({ state }: { state: NonNullable<WakingState> }) {
 
   return (
     <View style={styles.screen} accessibilityLiveRegion="polite">
-      <ActivityIndicator size="large" color="#a78bfa" />
+      <ActivityIndicator size="large" color="#38bdf8" />
       <Text style={styles.title}>Waking up</Text>
       <Text style={styles.message}>{state.message}</Text>
       <View style={styles.track}>
@@ -41,11 +41,11 @@ export function WakingScreen({ state }: { state: NonNullable<WakingState> }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0b0b12', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, zIndex: 100 },
+  screen: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0f172a', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, zIndex: 100 },
   title: { color: '#fff', fontSize: 26, fontWeight: '700', marginTop: 24 },
   message: { color: '#9a9ab0', fontSize: 15, lineHeight: 21, textAlign: 'center', marginTop: 8, maxWidth: 320 },
   track: { width: '70%', maxWidth: 260, height: 4, borderRadius: 2, backgroundColor: '#23233a', marginTop: 28, overflow: 'hidden' },
-  fill: { height: 4, borderRadius: 2, backgroundColor: '#a78bfa' },
+  fill: { height: 4, borderRadius: 2, backgroundColor: '#38bdf8' },
   card: { marginTop: 40, alignSelf: 'stretch', maxWidth: 360, backgroundColor: '#15151f', borderRadius: 16, borderWidth: StyleSheet.hairlineWidth, borderColor: '#2c2c40', padding: 18, alignItems: 'center' },
   cardText: { color: '#d8d8e8', fontSize: 15, lineHeight: 21, textAlign: 'center' },
   cta: { marginTop: 14, backgroundColor: '#7c5cff', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20 },

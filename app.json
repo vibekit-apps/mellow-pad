@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "My App",
-    "slug": "my-app",
+    "name": "Signal Trace",
+    "slug": "signal-trace",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0f172a",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -28,14 +28,14 @@
       "expo-status-bar",
       "expo-secure-store"
     ],
-    "scheme": "myapp",
+    "scheme": "signaltrace",
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0f172a"
     }
   }
 }

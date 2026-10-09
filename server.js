@@ -37,15 +37,47 @@ const MIME = {
 const routes = {
   'GET /health': (req, res) => json(res, { status: 'ok', uptime: process.uptime(), release: currentRelease() }),
 
-  // Example data. Replace with your app's own.
-  'GET /api/items': (req, res) => json(res, store.read('items')),
-  'POST /api/items': async (req, res) => {
-    const { text } = await readBody(req);
-    if (!text || !String(text).trim()) return json(res, { error: 'Write something first' }, 400);
-    const item = { id: crypto.randomUUID(), text: String(text).trim().slice(0, 500), createdAt: new Date().toISOString() };
-    store.write('items', [item, ...store.read('items')]);
-    json(res, item, 201);
+  'GET /api/calls': (req, res) => json(res, callLog()),
+  'GET /api/blocker': (req, res) => json(res, blocker()),
+  'POST /api/blocker': async (req, res) => {
+    const { number } = await readBody(req);
+    const cleaned = String(number || '').replace(/[^+\d]/g, '').slice(0, 24);
+    if (cleaned.length < 7) return json(res, { error: 'Enter a valid phone number.' }, 400);
+    const data = blocker();
+    if (!data.numbers.includes(cleaned)) data.numbers.unshift(cleaned);
+    store.write('blocker', data);
+    json(res, data, 201);
   },
+  'DELETE /api/blocker': async (req, res) => {
+    const { number } = await readBody(req);
+    const data = blocker();
+    data.numbers = data.numbers.filter((entry) => entry !== number);
+    store.write('blocker', data);
+    json(res, data);
+  },
+  'POST /api/blocker/rules': async (req, res) => {
+    const { autoBlock } = await readBody(req);
+    const data = blocker();
+    data.autoBlock = Boolean(autoBlock);
+    store.write('blocker', data);
+    json(res, data);
+  },
+  'GET /api/settings': (req, res) => json(res, settings()),
+  'POST /api/settings': async (req, res) => {
+    const next = { ...settings(), ...(await readBody(req)) };
+    store.write('settings', { showIp: Boolean(next.showIp), notifySpam: Boolean(next.notifySpam) });
+    json(res, settings());
+  },
+  'POST /api/lookup': async (req, res) => {
+    const { number } = await readBody(req);
+    const cleaned = String(number || '').replace(/[^+\d]/g, '').slice(0, 24);
+    if (cleaned.length < 7) return json(res, { error: 'Enter a valid phone number.' }, 400);
+    const result = { number: cleaned, status: cleaned.endsWith('0199') ? 'Possible spam' : 'No spam reports', checkedAt: new Date().toISOString() };
+    const history = store.read('lookups');
+    store.write('lookups', [result, ...history.filter((entry) => entry.number !== cleaned)].slice(0, 12));
+    json(res, { result, history: store.read('lookups') });
+  },
+  'GET /api/lookup': (req, res) => json(res, store.read('lookups')),
 
   // Accounts (lib/auth.js). The app keeps the returned token (lib/api.ts).
   'POST /api/auth/signup': async (req, res) => {
@@ -60,6 +92,19 @@ const routes = {
     return user ? json(res, { user }) : json(res, { error: 'Not signed in' }, 401);
   },
 };
+
+function callLog() {
+  return store.read('calls', [
+    { id: 'sample-1', number: '+1 415 555 0199', name: 'Unknown caller', time: 'Just now', ip: 'Unavailable from a phone number', spam: true },
+    { id: 'sample-2', number: '+1 212 555 0142', name: 'Saved contact', time: '24 min ago', ip: 'Unavailable from a phone number', spam: false },
+  ]);
+}
+function blocker() {
+  return store.read('blocker', { autoBlock: true, numbers: ['+14155550199'] });
+}
+function settings() {
+  return store.read('settings', { showIp: true, notifySpam: true });
+}
 
 function json(res, data, status = 200, headers = {}) {
   const payload = JSON.stringify(data);
